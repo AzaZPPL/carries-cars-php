@@ -3,25 +3,26 @@
 namespace CarriesCarsPhp\Tests\Unit;
 
 use CarriesCarsPhp\Domain\ValueObject\Duration;
+use CarriesCarsPhp\Domain\ValueObject\Mileage;
 use PHPUnit\Framework\TestCase;
 
-class DurationTest extends TestCase
+class MileageTest extends TestCase
 {
     /** @test */
-    public function duration_should_be_at_least_one_minute(): void
+    public function mileage_should_be_at_least_one_kilometer(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        Duration::ofMinutes(0);
+        Mileage::ofKilometers(0);
     }
 
     /**
      * @test
      * @dataProvider provideDifferentValidDurations
      */
-    public function convert_from_and_to_text(int $duration): void
+    public function convert_from_and_to_text(int $kilometers): void
     {
-        $duration = Duration::ofMinutes($duration);
-        $this->assertEquals($duration, Duration::fromString($duration->toString()));
+        $mileage = Mileage::ofKilometers($kilometers);
+        $this->assertEquals($mileage->length, $kilometers);
     }
 
     public static function provideDifferentValidDurations(): iterable
