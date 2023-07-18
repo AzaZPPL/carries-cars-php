@@ -25,4 +25,13 @@ final class Duration
         return (string) $this->length;
     }
 
+    public function extend(Duration|int $duration): self
+    {
+        if ($duration instanceof Duration) {
+            $duration = $duration->length;
+        }
+
+        return new self($this->length + $duration);
+    }
+
 }

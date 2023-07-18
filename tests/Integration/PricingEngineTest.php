@@ -40,7 +40,7 @@ class PricingEngineTest extends TestCase
         Money $expectedPrice
     ) {
         $pricingEngine = new PricingEngine();
-        $reservationMoney = $pricingEngine->calculatePrice(duration: $reservationDuration, pricePerMinute: $reservationPricePerMinute);
+        $reservationMoney = $pricingEngine->calculateExceededMinutesPrice(duration: $reservationDuration, pricePerMinute: $reservationPricePerMinute);
 
         $actual = $pricingEngine->calculatePrice(duration: $duration, pricePerMinute: $pricePerMinute);
 
