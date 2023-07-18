@@ -1,7 +1,8 @@
 <?php
 
-namespace CarriesCarsPhp\PricingEngine;
+namespace CarriesCarsPhp\Tests\Unit;
 
+use CarriesCarsPhp\CarRental\ValueObject\Duration;
 use PHPUnit\Framework\TestCase;
 
 class DurationTest extends TestCase

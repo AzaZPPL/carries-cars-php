@@ -1,8 +1,9 @@
 <?php
 
-namespace CarriesCarsPhp\PricingEngine;
+namespace CarriesCarsPhp\CarRental\Pricing;
 
 use Brick\Money\Money;
+use CarriesCarsPhp\CarRental\ValueObject\Duration;
 
 class PricingEngine
 {

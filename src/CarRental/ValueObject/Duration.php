@@ -1,6 +1,6 @@
 <?php
 
-namespace CarriesCarsPhp\PricingEngine;
+namespace CarriesCarsPhp\CarRental\ValueObject;
 
 final class Duration
 {
