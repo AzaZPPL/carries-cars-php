@@ -49,6 +49,29 @@ class PricingEngine
             default: $package->getMileage()->length
         );
 
-        return $totalPrice->plus($extraMinutesPrice)->plus($extraMileagePrice);
+        $extraPackagesPrice = $this->calculateExtraPackagesPrice($package);
+
+        return $totalPrice->plus($extraMinutesPrice)->plus($extraMileagePrice)->plus($extraPackagesPrice);
+    }
+
+    private function calculateExtraPackagesPrice(Package $package): Money
+    {
+        $extraPackages = $package->getPackages();
+
+        $price = Money::zero($package->getPrice()->getCurrency());
+
+        if (count($extraPackages) === 0) {
+            return $price;
+        }
+
+        foreach ($extraPackages as $extraPackage) {
+            $price = $price->plus($extraPackage->getPrice());
+
+            $extraPackagePrices = $this->calculateExtraPackagesPrice($extraPackage);
+
+            $price = $price->plus($extraPackagePrices);
+        }
+
+        return $price;
     }
 }

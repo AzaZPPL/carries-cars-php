@@ -139,6 +139,7 @@ class PricingEngineTest extends TestCase
     /**
      * @test
      * @dataProvider provideDifferentPackagesWithVariousExceededOptions
+     * @dataProvider provideDifferentPackagesWithVariousExceededOptionsAndAdditionalPackages
      */
     public function calculate_price_per_package(
         Package $package,
@@ -192,6 +193,40 @@ class PricingEngineTest extends TestCase
             Money::of(0.19, Currency::of('EUR')),
             Money::of(0.05, Currency::of('EUR')),
             Money::of(96.30, Currency::of('EUR'))
+        ];
+    }
+
+    public static function provideDifferentPackagesWithVariousExceededOptionsAndAdditionalPackages(): iterable
+    {
+        yield 'Three hours package with no exceeded minutes or kilometers with no additional packages' => [
+            Package::create(Duration::ofHours(3), Mileage::ofKilometers(75), Money::of(19, Currency::of('EUR'))),
+            Duration::ofMinutes(120),
+            Mileage::ofKilometers(60),
+            Money::of(0.19, Currency::of('EUR')),
+            Money::of(0.30, Currency::of('EUR')),
+            Money::of(19, Currency::of('EUR'))
+        ];
+        yield 'Three hours package with no exceeded minutes or kilometers with two additional packages' => [
+            Package::create(Duration::ofHours(3), Mileage::ofKilometers(75), Money::of(19, Currency::of('EUR')), [
+                Package::create(Duration::ofHours(1), Mileage::ofKilometers(25), Money::of(5, Currency::of('EUR'))),
+                Package::create(Duration::ofHours(1), Mileage::ofKilometers(25), Money::of(5, Currency::of('EUR')))
+            ]),
+            Duration::ofMinutes(120),
+            Mileage::ofKilometers(60),
+            Money::of(0.19, Currency::of('EUR')),
+            Money::of(0.30, Currency::of('EUR')),
+            Money::of(29, Currency::of('EUR'))
+        ];
+        yield 'Three hours package with no exceeded minutes or kilometers with two additional different packages' => [
+            Package::create(Duration::ofHours(3), Mileage::ofKilometers(75), Money::of(19, Currency::of('EUR')), [
+                Package::create(Duration::ofHours(4), Mileage::ofKilometers(30), Money::of(25, Currency::of('EUR'))),
+                Package::create(Duration::ofHours(2), Mileage::ofKilometers(500), Money::of(9, Currency::of('EUR')))
+            ]),
+            Duration::ofMinutes(120),
+            Mileage::ofKilometers(60),
+            Money::of(0.19, Currency::of('EUR')),
+            Money::of(0.30, Currency::of('EUR')),
+            Money::of(53, Currency::of('EUR'))
         ];
     }
 }
