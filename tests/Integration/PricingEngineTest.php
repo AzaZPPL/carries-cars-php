@@ -4,9 +4,10 @@ namespace CarriesCarsPhp\Tests\Integration;
 
 use Brick\Money\Currency;
 use Brick\Money\Money;
+use CarriesCarsPhp\Domain\Model\Package;
 use CarriesCarsPhp\Domain\Pricing\PricingEngine;
-use CarriesCarsPhp\Domain\ValueObject\Mileage;
 use CarriesCarsPhp\Domain\ValueObject\Duration;
+use CarriesCarsPhp\Domain\ValueObject\Mileage;
 use PHPUnit\Framework\TestCase;
 
 class PricingEngineTest extends TestCase
@@ -132,6 +133,65 @@ class PricingEngineTest extends TestCase
             Money::of(0.01, Currency::of('EUR')),
             Mileage::ofKilometers(500),
             Money::of(5.26, Currency::of('EUR'))
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider provideDifferentPackagesWithVariousExceededOptions
+     */
+    public function calculate_price_per_package(
+        Package $package,
+        Duration $actualDuration,
+        Mileage $actualMileage,
+        Money $pricePerMinute,
+        Money $pricePerKilometer,
+        Money $expectedPrice
+    ): void {
+        $pricingEngine = new PricingEngine();
+        $actual = $pricingEngine->calculatePriceWithPackage(
+            $actualDuration,
+            $actualMileage,
+            $pricePerMinute,
+            $pricePerKilometer,
+            $package
+        );
+        $this->assertEquals($expectedPrice, $actual);
+    }
+
+    public static function provideDifferentPackagesWithVariousExceededOptions(): iterable
+    {
+        yield 'Three hours package with no exceeded minutes or kilometers' => [
+            Package::create(Duration::ofHours(3), Mileage::ofKilometers(75), Money::of(19, Currency::of('EUR'))),
+            Duration::ofMinutes(120),
+            Mileage::ofKilometers(60),
+            Money::of(0.19, Currency::of('EUR')),
+            Money::of(0.30, Currency::of('EUR')),
+            Money::of(19, Currency::of('EUR'))
+        ];
+        yield 'Six hours package with 1 exceeded hour and 25 exceeded kilometers' => [
+            Package::create(Duration::ofHours(6), Mileage::ofKilometers(125), Money::of(39, Currency::of('EUR'))),
+            Duration::ofHours(7),
+            Mileage::ofKilometers(150),
+            Money::of(0.19, Currency::of('EUR')),
+            Money::of(0.30, Currency::of('EUR')),
+            Money::of(57.90, Currency::of('EUR'))
+        ];
+        yield 'One day package with 2 exceeded hours and 100 exceeded kilometers' => [
+            Package::create(Duration::ofDays(1), Mileage::ofKilometers(200), Money::of(59, Currency::of('EUR'))),
+            Duration::ofHours(26),
+            Mileage::ofKilometers(300),
+            Money::of(0.19, Currency::of('EUR')),
+            Money::of(0.30, Currency::of('EUR')),
+            Money::of(111.80, Currency::of('EUR'))
+        ];
+        yield 'Three day package with no exceeded hours and 26 exceeded kilometers with a price of 0.05' => [
+            Package::create(Duration::ofDays(3), Mileage::ofKilometers(400), Money::of(95, Currency::of('EUR'))),
+            Duration::ofHours(15),
+            Mileage::ofKilometers(426),
+            Money::of(0.19, Currency::of('EUR')),
+            Money::of(0.05, Currency::of('EUR')),
+            Money::of(96.30, Currency::of('EUR'))
         ];
     }
 }

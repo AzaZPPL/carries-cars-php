@@ -31,4 +31,15 @@ class DurationTest extends TestCase
         yield [100];
     }
 
+    public function duration_from_hours_converts_to_minutes(): void
+    {
+        $duration = Duration::ofHours(1);
+        $this->assertEquals(60, $duration->length);
+    }
+
+    public function duration_from_days_converts_to_minutes(): void
+    {
+        $duration = Duration::ofDays(1);
+        $this->assertEquals(1440, $duration->length);
+    }
 }

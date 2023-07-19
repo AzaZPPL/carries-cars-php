@@ -19,7 +19,7 @@ class MileageTest extends TestCase
      * @test
      * @dataProvider provideDifferentValidDurations
      */
-    public function convert_from_and_to_text(int $kilometers): void
+    public function mileage_can_create_from_any_integer(int $kilometers): void
     {
         $mileage = Mileage::ofKilometers($kilometers);
         $this->assertEquals($mileage->length, $kilometers);

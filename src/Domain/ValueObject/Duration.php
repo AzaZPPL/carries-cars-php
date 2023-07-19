@@ -16,6 +16,16 @@ final class Duration
         return new self($length);
     }
 
+    public static function ofHours(int $length): self
+    {
+        return new self($length * 60);
+    }
+
+    public static function ofDays(int $length): self
+    {
+        return new self($length * 60 * 24);
+    }
+
     public static function fromString($string): self
     {
         return new self((int)$string);

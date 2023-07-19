@@ -3,8 +3,9 @@
 namespace CarriesCarsPhp\Domain\Pricing;
 
 use Brick\Money\Money;
-use CarriesCarsPhp\Domain\ValueObject\Mileage;
+use CarriesCarsPhp\Domain\Model\Package;
 use CarriesCarsPhp\Domain\ValueObject\Duration;
+use CarriesCarsPhp\Domain\ValueObject\Mileage;
 
 class PricingEngine
 {
@@ -25,5 +26,29 @@ class PricingEngine
         $extraMileage = max(0, $mileage->length - $default);
 
         return $pricePerKilometer->multipliedBy($extraMileage);
+    }
+
+    public function calculatePriceWithPackage(
+        Duration $actualDuration,
+        Mileage $actualMileage,
+        Money $pricePerMinute,
+        Money $pricePerKilometer,
+        Package $package
+    ): Money {
+        $totalPrice = $package->getPrice();
+
+        $extraMinutesPrice = $this->calculateExceededMinutesPrice(
+            duration: $actualDuration,
+            pricePerMinute: $pricePerMinute,
+            default: $package->getDuration()->length
+        );
+
+        $extraMileagePrice = $this->calculateExceededMileagePrice(
+            mileage: $actualMileage,
+            pricePerKilometer: $pricePerKilometer,
+            default: $package->getMileage()->length
+        );
+
+        return $totalPrice->plus($extraMinutesPrice)->plus($extraMileagePrice);
     }
 }
